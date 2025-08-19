@@ -45,7 +45,7 @@ const InfoCard = ({
           alt={title}
           className="w-full h-48 object-cover hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium flex items-center shadow-sm">
+        <div className="absolute top-3 right-3 bg-white backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium flex items-center shadow-sm">
           <span className="text-indigo-600">{platform}</span>
           <FaExternalLinkAlt className="ml-1 text-indigo-400 text-xs" />
         </div>
@@ -105,7 +105,7 @@ const AboutUs = () => {
       <InfoCard
         title="About Our Mission"
         description="Learn about our commitment to quality mobile repair services."
-        platform="Our Website"
+        platform="Our Vision"
         rating={4.9}
         duration="5 years"
         customClick={() => navigate("/about-us")}
