@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { FiLock, FiGlobe, FiDollarSign, FiStar, FiClock, FiUser, FiFilter, FiSearch } from 'react-icons/fi';
 import { FaCoins } from 'react-icons/fa';
+import { baseUrl } from '../../services/apiService';
 
 const OthersProblem = () => {
     const user = "pooja"
@@ -22,7 +23,7 @@ const OthersProblem = () => {
             try {
                 setLoading(true);
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:5000/api/problem/others-problems', {
+                const response = await axios.get(`${baseUrl}problem/others-problems`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

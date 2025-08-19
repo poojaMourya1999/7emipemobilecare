@@ -36,7 +36,7 @@ const SolutionForProblem = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `${baseUrl}/problem/${problemId}/solutions`,
+        `${baseUrl}problem/${problemId}/solutions`,
         {
           description,
           attachments

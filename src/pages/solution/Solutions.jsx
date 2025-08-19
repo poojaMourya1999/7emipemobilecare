@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { baseUrl } from '../../services/apiService';
 
 const SolutionList = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const SolutionList = () => {
   const fetchSolutions = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/solution', {
+      const res = await axios.get(`${baseUrl}solution`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

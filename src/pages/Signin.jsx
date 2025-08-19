@@ -27,7 +27,7 @@ const Signin = () => {
             await localStorage.setItem('token', res.token)
             await localStorage.setItem('userId', res?._id)
 
-            navigate('/dashboard')
+            navigate('/dashboard', {replace:true})
             localStorage.setItem("loginTime", Date.now());
 
             console.log(res.data);

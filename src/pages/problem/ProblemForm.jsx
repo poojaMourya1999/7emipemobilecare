@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { baseUrl } from '../../services/apiService';
 
 const ProblemForm = () => {
   const [form, setForm] = useState({
@@ -38,7 +39,7 @@ const ProblemForm = () => {
     const token = localStorage.getItem('token'); // Your JWT
 
     try {
-      const res = await fetch('http://localhost:5000/api/problem', {
+      const res = await fetch(`${baseUrl}problem`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -7,6 +7,7 @@ import ConfirmationModal from '../../components/ConformaitionModal';
 import MyModal from '../../components/MyModal';
 import { EyeIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { baseUrl } from '../../services/apiService';
 
 const UserProblem = () => {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ const UserProblem = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:5000/api/problem/my-problems', {
+            const response = await axios.get(`${baseUrl}problem/my-problems`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -42,7 +43,7 @@ const UserProblem = () => {
     const handleDeleteProblem = async () => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/problem/${problemToDelete}`, {
+            await axios.delete(`${baseUrl}problem/${problemToDelete}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

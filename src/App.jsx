@@ -24,6 +24,7 @@ import ProblemByIdPublic from './pages/problem/ProblemByIdPublic';
 import UsersTools from './pages/tools/UsersTools';
 import OthersTools from './pages/tools/OthersTool';
 import PublicProfile from './pages/about/PublicProfile';
+import Splash from './Splash';
 
 function App() {
   return (
@@ -31,6 +32,12 @@ function App() {
       <SessionManager />
       <Routes>
         <Route path="/" element={
+          <PublicRoute>
+            {/* <Home /> */}
+            <Splash/>
+          </PublicRoute>
+        } />
+         <Route path="/7empire-mobile-care" element={
           <PublicRoute>
             <Home />
           </PublicRoute>

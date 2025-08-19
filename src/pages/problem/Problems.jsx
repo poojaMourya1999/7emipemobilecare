@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FiClock, FiAward, FiUser, FiTag, FiFilter } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { baseUrl } from '../../services/apiService';
 
 const Problems = ({ context = "protected" }) => {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -22,7 +23,7 @@ const Problems = ({ context = "protected" }) => {
         setLoading(true);
         setError(null);
         const query = new URLSearchParams(filters).toString();
-        const response = await fetch(`http://localhost:5000/api/problem/`);
+        const response = await fetch(`${baseUrl}problem/`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

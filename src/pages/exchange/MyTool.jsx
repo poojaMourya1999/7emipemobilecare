@@ -88,7 +88,7 @@ function MyTool({ onSuccess, handleExchange, }) {
                                             onClick={() => handleSelect(tool?._id)}
                                             className="text-sm px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
                                         >
-                                           {selectedId !== tool?._id ? 'Selected' : 'Select'}
+                                           {selectedId !== tool?._id ? 'Select' : 'Selected'}
                                         </button>
                                     </td>
                                 </tr>
