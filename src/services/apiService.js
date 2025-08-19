@@ -2,7 +2,6 @@ import axios from 'axios';
 
 // Base URL for API
 export const baseUrl = 'https://toolsapi-1.onrender.com/api/';
-// export const baseUrl = 'http://localhost:5000/api/';
 
 const apiService = async ({
   endpoint,

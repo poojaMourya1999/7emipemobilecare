@@ -12,7 +12,7 @@ const EditProfile = ({user, onSuccess}) => {
         age: user.age || '28',
         gender: user.gender || 'male',
         bio: user.bio || 'Software developer passionate about building great user experiences',
-        profilePic: user.profilePic || ':5000/api/get-image/1755436674797-jalpuri.jpg'
+        profilePic: user.profilePic 
     });
 
     const [preview, setPreview] = useState(null);
