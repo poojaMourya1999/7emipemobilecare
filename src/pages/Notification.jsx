@@ -16,6 +16,7 @@ const NotificationList = () => {
                 method: 'GET'
             });
             setNotifications(res?.notifications);
+            
         } catch (err) {
             console.error('Error fetching notifications:', err.message);
         }

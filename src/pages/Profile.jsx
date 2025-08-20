@@ -29,6 +29,18 @@ const Profile = () => {
     getUserProfile();
   }, []);
 
+  // Function to calculate success rate
+  const calculateSuccessRate = (created, solved) => {
+    if (!created || created === 0) return 0;
+    return Math.min(100, Math.round((solved / created) * 100));
+  };
+
+  // Calculate success rate based on current user stats
+  const successRate = calculateSuccessRate(
+    user?.stats?.problemsPosted || 0, 
+    user?.stats?.solutionsProvided || 0
+  );
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -47,7 +59,7 @@ const Profile = () => {
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         {/* Cover Photo */}
         <div className="h-32 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-        
+
         {/* Profile Content */}
         <div className="px-6 pb-6 relative">
           {/* Profile Picture and Basic Info */}
@@ -57,7 +69,7 @@ const Profile = () => {
               alt="Profile"
               className="h-32 w-32 rounded-full border-4 border-white shadow-lg object-cover"
             />
-            
+
             <div className="mt-4 md:mt-0 md:ml-6 flex-grow">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                 <div>
@@ -71,8 +83,8 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                
-                <button 
+
+                <button
                   onClick={() => setEditProfileModal(true)}
                   className="mt-3 sm:mt-0 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
                 >
@@ -82,14 +94,14 @@ const Profile = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Main Profile Info */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column - Basic Info */}
             <div className="space-y-6">
               <div className="bg-gray-50 rounded-lg p-5">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Basic Information</h2>
-                
+
                 <div className="space-y-4">
                   <div className="flex items-start">
                     <FiMail className="text-gray-500 mt-1 mr-3 flex-shrink-0" />
@@ -98,7 +110,7 @@ const Profile = () => {
                       <p className="text-gray-800">{user.email || 'Not provided'}</p>
                     </div>
                   </div>
-                  
+
                   {user.bio && (
                     <div className="flex items-start">
                       <FiUser className="text-gray-500 mt-1 mr-3 flex-shrink-0" />
@@ -125,12 +137,12 @@ const Profile = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Right Column - Professional Info */}
             <div className="space-y-6">
               <div className="bg-blue-50 rounded-lg p-5">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Professional Information</h2>
-                
+
                 <div className="space-y-4">
                   {user.experience && (
                     <div className="flex items-start">
@@ -143,7 +155,7 @@ const Profile = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {user.organization && (
                     <div className="flex items-start">
                       <FiBriefcase className="text-blue-500 mt-1 mr-3 flex-shrink-0" />
@@ -153,7 +165,7 @@ const Profile = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {user.industry && (
                     <div className="flex items-start">
                       <FiBriefcase className="text-blue-500 mt-1 mr-3 flex-shrink-0" />
@@ -171,15 +183,15 @@ const Profile = () => {
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Activity Stats</h2>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-2xl font-bold text-indigo-600">{user.stats?.problemCount || 0}</p>
+                    <p className="text-2xl font-bold text-indigo-600">{user?.stats?.problemsPosted || 0}</p>
                     <p className="text-sm text-gray-500">Problems Created</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-indigo-600">{user.stats?.solutionCount || 0}</p>
+                    <p className="text-2xl font-bold text-indigo-600">{user?.stats?.solutionsProvided || 0}</p>
                     <p className="text-sm text-gray-500">Problems Solved</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-indigo-600">{user.stats?.successRate || 0}%</p>
+                    <p className="text-2xl font-bold text-indigo-600">{successRate}%</p>
                     <p className="text-sm text-gray-500">Success Rate</p>
                   </div>
                 </div>
@@ -196,12 +208,12 @@ const Profile = () => {
           onClose={() => setEditProfileModal(false)}
           title="Edit Profile"
         >
-          <EditProfile 
-            user={user} 
+          <EditProfile
+            user={user}
             onSuccess={() => {
               setEditProfileModal(false);
               getUserProfile(); // Refresh profile data
-            }} 
+            }}
           />
         </MyModal>
       )}

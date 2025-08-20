@@ -23,6 +23,34 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { AiFillCheckCircle } from 'react-icons/ai';
 
+// Import Chart.js components
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement,
+} from 'chart.js';
+import { Bar, Doughnut, Line } from 'react-chartjs-2';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement
+);
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -64,7 +92,7 @@ const Dashboard = () => {
     {
       title: 'Products',
       value: data?.userTools || 0,
-      icon: <FiPackage className="text-xl" />,  // Appropriate for tools
+      icon: <FiPackage className="text-xl" />,
       bg: 'bg-gradient-to-br from-blue-50 to-blue-100',
       border: 'border-l-4 border-blue-500',
       hover: 'hover:shadow-blue-100',
@@ -73,7 +101,7 @@ const Dashboard = () => {
     {
       title: 'Cart Items',
       value: data?.cartTools || 0,
-      icon: <FiShoppingCart className="text-xl" />,  // Perfect for cart
+      icon: <FiShoppingCart className="text-xl" />,
       bg: 'bg-gradient-to-br from-green-50 to-green-100',
       border: 'border-l-4 border-green-500',
       hover: 'hover:shadow-green-100',
@@ -82,7 +110,7 @@ const Dashboard = () => {
     {
       title: 'Problems',
       value: data?.problemCount || 0,
-      icon: <FiAlertCircle className="text-xl" />,  // Better for problems (using AlertCircle instead of HelpCircle)
+      icon: <FiAlertCircle className="text-xl" />,
       bg: 'bg-gradient-to-br from-gray-50 to-gray-100',
       border: 'border-l-4 border-gray-500',
       hover: 'hover:shadow-gray-100',
@@ -91,7 +119,7 @@ const Dashboard = () => {
     {
       title: 'Solutions',
       value: data?.solutionCount || 0,
-      icon: <AiFillCheckCircle className="text-xl" />,  // Good for solutions
+      icon: <AiFillCheckCircle className="text-xl" />,
       bg: 'bg-gradient-to-br from-yellow-50 to-yellow-100',
       border: 'border-l-4 border-yellow-500',
       hover: 'hover:shadow-yellow-100',
@@ -100,7 +128,7 @@ const Dashboard = () => {
     {
       title: 'Exchanges',
       value: data?.exchangeTools || 0,
-      icon: <FiRepeat className="text-xl" />,  // Using Repeat icon for exchanges
+      icon: <FiRepeat className="text-xl" />,
       bg: 'bg-gradient-to-br from-purple-50 to-purple-100',
       border: 'border-l-4 border-purple-500',
       hover: 'hover:shadow-purple-100',
@@ -109,13 +137,96 @@ const Dashboard = () => {
     {
       title: 'Marketplace',
       value: data?.totalTools || 0,
-      icon: <FiShoppingBag className="text-xl" />,  // ShoppingBag better represents marketplace
+      icon: <FiShoppingBag className="text-xl" />,
       bg: 'bg-gradient-to-br from-pink-50 to-pink-100',
       border: 'border-l-4 border-pink-500',
       hover: 'hover:shadow-pink-100',
       clickFunction: () => navigate('/others-tools')
     }
   ];
+
+  // Prepare data for the bar chart
+  const barChartData = {
+    labels: ['Products', 'Cart Items', 'Problems', 'Solutions', 'Exchanges', 'Marketplace'],
+    datasets: [
+      {
+        label: 'Count',
+        data: [
+          data?.userTools || 0,
+          data?.cartTools || 0,
+          data?.problemCount || 0,
+          data?.solutionCount || 0,
+          data?.exchangeTools || 0,
+          data?.totalTools || 0
+        ],
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(201, 203, 207, 0.7)'
+        ],
+        borderColor: [
+          'rgb(54, 162, 235)',
+          'rgb(75, 192, 192)',
+          'rgb(153, 102, 255)',
+          'rgb(255, 206, 86)',
+          'rgb(255, 99, 132)',
+          'rgb(201, 203, 207)'
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Options for the bar chart
+  const barChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Dashboard Statistics Overview',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      },
+    },
+  };
+
+  // Data for the doughnut chart (if you want to show a different visualization)
+  const doughnutChartData = {
+    labels: ['Products', 'Problems', 'Solutions'],
+    datasets: [
+      {
+        label: 'Distribution',
+        data: [
+          data?.userTools || 0,
+          data?.problemCount || 0,
+          data?.solutionCount || 0
+        ],
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+        ],
+        borderColor: [
+          'rgb(54, 162, 235)',
+          'rgb(153, 102, 255)',
+          'rgb(255, 206, 86)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
 
   const handleDashboard = async () => {
     setLoading(true);
@@ -200,74 +311,52 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Recent Activity Section */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
-      >
-        <div className="flex items-center justify-between p-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-            <FiActivity className="mr-2 text-blue-500" /> Recent Activity
-          </h3>
-          <button
-            className="text-sm text-blue-600 hover:text-blue-800 transition flex items-center"
-            onClick={() => navigate('/activity')}
-          >
-            View All <FiArrowRight className="ml-1" />
-          </button>
-        </div>
+      {/* Graphs Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Bar Chart */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-white p-4 rounded-lg shadow-md"
+        >
+          <h3 className="text-lg font-semibold mb-4">Statistics Overview</h3>
+          {loading ? (
+            <Skeleton height={300} />
+          ) : (
+            <div className="h-80">
+              <Bar data={barChartData} options={barChartOptions} />
+            </div>
+          )}
+        </motion.div>
 
-        {loading ? (
-          <div className="p-4 space-y-4">
-            {[1, 2, 3].map((item) => (
-              <Skeleton key={item} height={60} />
-            ))}
-          </div>
-        ) : activities.length > 0 ? (
-          <ul className="divide-y divide-gray-100">
-            {activities.map((activity) => (
-              <motion.li
-                key={activity.id}
-                whileHover={{ backgroundColor: 'rgba(249, 250, 251, 1)' }}
-                className={`p-4 cursor-pointer transition ${!activity.read ? 'bg-blue-50' : ''}`}
-                onClick={() => markAsRead(activity.id)}
-              >
-                <div className="flex items-start">
-                  <div className={`p-2 rounded-full mr-3 ${activity.type === 'solution' ? 'bg-green-100 text-green-600' :
-                      activity.type === 'problem' ? 'bg-purple-100 text-purple-600' :
-                        'bg-blue-100 text-blue-600'
-                    }`}>
-                    {activity.type === 'solution' ? <FiCheckCircle /> :
-                      activity.type === 'problem' ? <FiAlertCircle /> : <FiTool />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-800">{activity.title}</p>
-                    <p className="text-xs text-gray-500 mt-1 flex items-center">
-                      <FiClock className="mr-1" /> {activity.time}
-                    </p>
-                  </div>
-                  {!activity.read && (
-                    <div className="w-2 h-2 rounded-full bg-blue-500 ml-2"></div>
-                  )}
-                </div>
-              </motion.li>
-            ))}
-          </ul>
-        ) : (
-          <div className="p-8 text-center">
-            <FiActivity className="mx-auto text-gray-300 text-4xl mb-2" />
-            <p className="text-gray-500">No recent activities found</p>
-            <button
-              onClick={() => navigate('/problems/new')}
-              className="mt-4 text-sm text-blue-600 hover:text-blue-800 transition"
-            >
-              Post your first problem to get started
-            </button>
-          </div>
-        )}
-      </motion.div>
+        {/* Doughnut Chart */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-white p-4 rounded-lg shadow-md"
+        >
+          <h3 className="text-lg font-semibold mb-4">Content Distribution</h3>
+          {loading ? (
+            <Skeleton height={300} />
+          ) : (
+            <div className="h-80">
+              <Doughnut 
+                data={doughnutChartData} 
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                    },
+                  },
+                }} 
+              />
+            </div>
+          )}
+        </motion.div>
+      </div>
 
       {/* Quick Actions */}
       <motion.div
@@ -277,7 +366,7 @@ const Dashboard = () => {
         className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4"
       >
         <div
-          onClick={() => navigate('/problems/new')}
+          onClick={() => navigate('/my-problems')}
           className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white cursor-pointer hover:shadow-lg transition"
         >
           <h3 className="font-semibold mb-1">Post a Problem</h3>

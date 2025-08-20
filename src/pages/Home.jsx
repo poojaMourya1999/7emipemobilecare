@@ -35,12 +35,12 @@ const Home = () => {
       {/* Signup Button */}
       <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
         <Link
-          to="/signup"
+          to="/signin"
           className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-indigo-700 to-purple-800 
                      text-white rounded-xl shadow-lg hover:shadow-xl 
                      hover:scale-105 transform transition font-semibold text-sm sm:text-base"
         >
-          Sign Up
+          Signin
         </Link>
       </div>
 
