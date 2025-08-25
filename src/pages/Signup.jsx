@@ -1,319 +1,201 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FiUser, FiMail, FiLock, FiUpload } from 'react-icons/fi';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
-    const navigate = useNavigate();
-    const [form, setForm] = useState({
-        name: '',
-        email: '',
-        password: '',
-        bio: '',
-        skills: [],
-        experience: 0,
-        organization: '',
-        industry: ''
-    });
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    bio: "",
+    skills: [],
+    experience: "",
+    organization: "",
+    industry: "",
+  });
 
-    const [preview, setPreview] = useState(null);
-    const [imageFile, setImageFile] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
-    const [skillsInput, setSkillsInput] = useState('');
+  // ✅ Form validation
+  const validateForm = () => {
+    if (!form.name || !form.email || !form.password) {
+      alert("Name, Email, and Password are required!");
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(form.email)) {
+      alert("Invalid email format!");
+      return false;
+    }
+    return true;
+  };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
+  // ✅ Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImageFile(file);
-            setPreview(URL.createObjectURL(file));
-        }
-    };
+  const handleSkillsChange = (e) => {
+    const skillsArray = e.target.value
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    setForm({ ...form, skills: skillsArray });
+  };
 
-    const handleSkillsChange = (e) => {
-        setSkillsInput(e.target.value);
-    };
+  // ✅ API call
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    const addSkill = () => {
-        if (skillsInput.trim() && !form.skills.includes(skillsInput.trim())) {
-            setForm({
-                ...form,
-                skills: [...form.skills, skillsInput.trim()]
-            });
-            setSkillsInput('');
-        }
-    };
+    setLoading(true);
 
-    const removeSkill = (skillToRemove) => {
-        setForm({
-            ...form,
-            skills: form.skills.filter(skill => skill !== skillToRemove)
-        });
-    };
+    try {
+      const payload = {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        bio: form.bio,
+        skills: form.skills,
+        experience: Number(form.experience),
+        organization: form.organization,
+        industry: form.industry,
+      };
 
-    const validateForm = () => {
-        const newErrors = {};
-        
-        if (!form.name.trim()) newErrors.name = 'Name is required';
-        if (!form.email.trim()) newErrors.email = 'Email is required';
-        if (!form.password) newErrors.password = 'Password is required';
-        if (form.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-        
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+      const response = await fetch("https://toolsapi-1.onrender.com/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const handleSignup = async (e) => {
-        e.preventDefault();
-        
-        if (!validateForm()) return;
-        
-        setLoading(true);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Registration failed");
+      }
 
-        try {
-            // Prepare form data (including file upload if needed)
-            const formData = new FormData();
-            formData.append('name', form.name);
-            formData.append('email', form.email);
-            formData.append('password', form.password);
-            formData.append('bio', form.bio);
-            form.skills.forEach(skill => formData.append('skills[]', skill));
-            formData.append('experience', form.experience);
-            formData.append('organization', form.organization);
-            formData.append('industry', form.industry);
-            if (imageFile) formData.append('profilePic', imageFile);
+      await response.json();
+      alert("🎉 Registration successful!");
+      navigate("/signin");
+    } catch (err) {
+      alert(err?.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            // Simulate API call (replace with actual fetch)
-            console.log('Submitting:', Object.fromEntries(formData));
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            alert('Registration successful!');
-            navigate('/signin');
-        } catch (err) {
-            alert(err?.message || 'Registration failed');
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-6">
+      <div className="bg-white shadow-xl rounded-3xl w-full max-w-2xl p-8 border border-gray-100">
+        {/* Header */}
+        <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-2">
+          Create Account
+        </h2>
+        <p className="text-center text-gray-500 mb-6">
+          Join us and explore amazing features 🚀
+        </p>
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden"
-            >
-                {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white">
-                    <h1 className="text-3xl font-bold">Create Your Account</h1>
-                    <p className="opacity-90">Join our community to start solving problems</p>
-                </div>
+        {/* Form */}
+        <form onSubmit={handleSignup} className="space-y-4">
+          {/* Row 1 */}
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={form.name}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-                <form onSubmit={handleSignup} className="p-6 md:p-8 space-y-6">
-                    {/* Basic Info Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-1">
-                            <label className="flex items-center text-sm font-medium text-gray-700">
-                                <FiUser className="mr-2" /> Name *
-                            </label>
-                            <input
-                                name="name"
-                                value={form.name}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-red-300' : 'border-gray-300'} focus:ring-blue-500 focus:border-blue-500`}
-                                placeholder="John Doe"
-                            />
-                            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-                        </div>
+          {/* Row 2 */}
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="text"
+              name="organization"
+              placeholder="Organization"
+              value={form.organization}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-                        <div className="space-y-1">
-                            <label className="flex items-center text-sm font-medium text-gray-700">
-                                <FiMail className="mr-2" /> Email *
-                            </label>
-                            <input
-                                name="email"
-                                type="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-red-300' : 'border-gray-300'} focus:ring-blue-500 focus:border-blue-500`}
-                                placeholder="john@example.com"
-                            />
-                            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-                        </div>
+          {/* Row 3 */}
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="number"
+              name="experience"
+              placeholder="Years of Experience"
+              value={form.experience}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="text"
+              name="industry"
+              placeholder="Industry"
+              value={form.industry}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-                        <div className="space-y-1">
-                            <label className="flex items-center text-sm font-medium text-gray-700">
-                                <FiLock className="mr-2" /> Password *
-                            </label>
-                            <input
-                                name="password"
-                                type="password"
-                                value={form.password}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-red-300' : 'border-gray-300'} focus:ring-blue-500 focus:border-blue-500`}
-                                placeholder="••••••••"
-                            />
-                            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
-                        </div>
+          {/* Bio full width */}
+          <textarea
+            name="bio"
+            placeholder="Short Bio"
+            value={form.bio}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500"
+          />
 
-                        <div className="space-y-1">
-                            <label className="flex items-center text-sm font-medium text-gray-700">
-                                <FiUser className="mr-2" /> Profile Picture
-                            </label>
-                            <div className="flex items-center space-x-4">
-                                <label className="cursor-pointer">
-                                    <div className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex items-center">
-                                        <FiUpload className="mr-2" />
-                                        Upload Image
-                                        <input 
-                                            type="file" 
-                                            accept="image/*" 
-                                            onChange={handleImageChange} 
-                                            className="hidden" 
-                                        />
-                                    </div>
-                                </label>
-                                {preview && (
-                                    <img 
-                                        src={preview} 
-                                        alt="Preview" 
-                                        className="w-12 h-12 rounded-full object-cover border-2 border-blue-200" 
-                                    />
-                                )}
-                            </div>
-                        </div>
-                    </div>
+          {/* Skills full width */}
+          <input
+            type="text"
+            placeholder="Skills (comma separated)"
+            value={form.skills.join(", ")}
+            onChange={handleSkillsChange}
+            className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500"
+          />
 
-                    {/* Bio Section */}
-                    <div className="space-y-1">
-                        <label className="text-sm font-medium text-gray-700">About You</label>
-                        <textarea
-                            name="bio"
-                            value={form.bio}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Tell us about yourself..."
-                            rows="3"
-                        />
-                    </div>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold text-lg transition-all shadow-md disabled:bg-blue-300"
+          >
+            {loading ? "⏳ Registering..." : "Sign Up"}
+          </button>
+        </form>
 
-                    {/* Skills Section */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Skills</label>
-                        <div className="flex flex-wrap gap-2 mb-2">
-                            {form.skills.map(skill => (
-                                <span 
-                                    key={skill} 
-                                    className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm"
-                                >
-                                    {skill}
-                                    <button 
-                                        type="button"
-                                        onClick={() => removeSkill(skill)}
-                                        className="ml-2 text-blue-600 hover:text-blue-800"
-                                    >
-                                        ×
-                                    </button>
-                                </span>
-                            ))}
-                        </div>
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                value={skillsInput}
-                                onChange={handleSkillsChange}
-                                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Add a skill (e.g. JavaScript)"
-                            />
-                            <button
-                                type="button"
-                                onClick={addSkill}
-                                className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
-                            >
-                                Add
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Experience Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium text-gray-700">Experience (years)</label>
-                            <input
-                                name="experience"
-                                type="number"
-                                min="0"
-                                value={form.experience}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Organization Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium text-gray-700">Organization (optional)</label>
-                            <input
-                                name="organization"
-                                value={form.organization}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Company name"
-                            />
-                        </div>
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium text-gray-700">Industry (optional)</label>
-                            <input
-                                name="industry"
-                                value={form.industry}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="e.g. Technology, Healthcare"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="pt-4">
-                        <motion.button
-                            type="submit"
-                            disabled={loading}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all"
-                        >
-                            {loading ? (
-                                <span className="flex items-center justify-center">
-                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Creating Account...
-                                </span>
-                            ) : 'Create Account'}
-                        </motion.button>
-                    </div>
-
-                    <div className="text-center text-sm text-gray-600">
-                        Already have an account?{' '}
-                        <Link to="/signin" className="text-blue-600 hover:underline font-medium">
-                            Sign in
-                        </Link>
-                    </div>
-                </form>
-            </motion.div>
-        </div>
-    );
+        {/* Footer */}
+        <p className="text-center text-sm mt-6 text-gray-600">
+          Already have an account?{" "}
+          <button
+            onClick={() => navigate("/signin")}
+            className="text-blue-600 font-semibold hover:underline"
+          >
+            Sign in
+          </button>
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Signup;
